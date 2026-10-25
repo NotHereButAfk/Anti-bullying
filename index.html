@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>After the Bell — A Branching Story</title>
+<style>
+:root{color-scheme:dark;--ink:#edf4ff;--muted:#a3b0c5;--panel:#19243b;--line:#354560;--accent:#87e6d2;--gold:#ffca84}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 75% 10%,#30466a,#101827 65%);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}button,input{font:inherit}
+.wrap{max-width:1100px;margin:auto;padding:28px 18px 70px}header{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h1,h2,h3,p{margin-top:0}.eyebrow{color:var(--accent);font-size:.8rem;letter-spacing:.19em;text-transform:uppercase;font-weight:700}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin-bottom:8px}.tagline{color:var(--muted);max-width:610px}
+button{cursor:pointer;border:1px solid var(--line);background:#24334f;color:var(--ink);border-radius:12px;padding:12px 16px;font-weight:650}button:hover:not(:disabled),button:focus-visible{border-color:var(--accent);background:#314b61;outline:2px solid transparent}button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--accent);color:#092b2b;border-color:var(--accent)}.primary:hover:not(:disabled){background:#c4fff0;color:#092b2b}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:20px;margin-top:25px}.panel{border:1px solid var(--line);background:rgba(20,31,52,.92);border-radius:22px;box-shadow:0 24px 65px #060d1b40;overflow:hidden}.scene{padding:25px;min-height:590px}.chapter{color:var(--gold);font-size:.8rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.art{height:170px;display:grid;place-items:center;border-radius:16px;margin:17px 0 22px;position:relative;overflow:hidden;background:linear-gradient(150deg,#294b69,#3d5470 40%,#1a263d)}.art:before{content:'';position:absolute;inset:auto 0 0;height:60px;background:repeating-linear-gradient(90deg,#16273b 0 50px,#253850 50px 55px);opacity:.8}.art:after{content:'';position:absolute;right:12%;top:16px;width:130px;height:100px;border:8px solid #a9d9d7;background:linear-gradient(#83b3c0,#ecb785);opacity:.65}.art span{position:relative;z-index:2;font-size:66px;filter:drop-shadow(0 10px 10px #101627)}#narrative{color:#dfebf9;white-space:pre-line;max-width:64ch}.choices{display:grid;gap:10px;margin-top:25px}.choice{text-align:left;width:100%;display:flex;align-items:flex-start;gap:12px;line-height:1.4}.choice b{color:var(--accent)}.small{font-size:.85rem;color:var(--muted)}aside{padding:20px;align-self:start}aside h3{font-size:1rem;margin-bottom:14px}.meter{margin:14px 0}.meter header{font-size:.84rem;margin-bottom:6px}.track{height:9px;border-radius:20px;background:#0a1222;overflow:hidden}.fill{height:100%;border-radius:20px;background:var(--accent);transition:width .3s}.fill.stress{background:#f6a18b}.events{padding-left:19px;color:var(--muted);font-size:.83rem;max-height:255px;overflow:auto}.events li{margin-bottom:7px}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.actions button{font-size:.83rem;padding:9px 11px}.status{color:var(--muted);font-size:.85rem}.intro{padding:26px}.intro p{max-width:72ch}.intro label{display:block;margin:19px 0 7px;color:var(--muted)}input{width:min(100%,330px);padding:13px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:#0e192b}.hidden{display:none!important}.footer{font-size:.8rem;color:var(--muted);padding:20px 2px}#endingScore{color:var(--gold);font-weight:700}
+@media(max-width:750px){.layout{grid-template-columns:1fr}.scene{min-height:0}.art{height:130px}aside{order:2}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div><div class="eyebrow">An interactive story about choices and courage</div><h1>AFTER THE BELL</h1><p class="tagline">No two friendships unfold exactly alike. Your choices shape who trusts you, what happens next, and how the school changes.</p></div><div class="actions"><button id="restart">New story</button><button id="save">Save</button><button id="load">Load</button></div></header>
+<section id="intro" class="panel intro"><h2>A new semester. Your story.</h2><p>You're transferring to Northbridge High. Small moments can become turning points. Listen, stand up for someone, seek support, keep a secret, or make a mistake—and live with the consequences.</p><p>There is no single perfect path. Asking for help and setting boundaries are meaningful choices. You're never required to confront someone alone.</p><label for="name">What should everyone call you?</label><input id="name" maxlength="22" placeholder="Alex" autocomplete="off"><div class="actions"><button class="primary" id="begin">Begin story</button></div><p class="small">Fictional story involving bullying and social exclusion. No graphic violence. Progress is saved on this device only.</p></section>
+<div class="layout hidden" id="game"><main class="panel scene" aria-live="polite"><div class="chapter" id="chapter"></div><h2 id="sceneTitle"></h2><div class="art" aria-hidden="true"><span id="emoji">🏫</span></div><p id="narrative"></p><div class="choices" id="choices"></div><p class="small" id="endingScore"></p></main><aside class="panel"><h3>Your story so far</h3><div id="meters"></div><h3>What you've done</h3><ol class="events" id="events"></ol><p class="status" id="day"></p></aside></div>
+<div class="footer">Story choices can affect relationships, safety, and support. This fictional game is not a substitute for real-world help. If bullying is happening, reaching out to a trusted adult is a valid option.</div>
+</div>
+<script>
+'use strict';
+const KEY='after-the-bell-save-v1';
+const clamp=n=>Math.max(0,Math.min(100,n));
+const init=name=>({version:1,name:name||'Alex',scene:'arrival',day:1,stats:{confidence:45,stress:20,trust:25,friendship:20,school:10},flags:{},history:[],seen:[],path:[]});
+let state=null;
+const $=id=>document.getElementById(id);
+const scenes={
+arrival:{title:'The Empty Seat',emoji:'🏫',text:s=>`First day at Northbridge High. Every seat looks taken—except one beside Morgan, who's quietly sketching in a notebook.
+
+Across the room, Riley and two friends are joking loudly about the sketchbook. Morgan closes it as you approach.
+
+The teacher hasn't arrived yet. Nobody knows you.`,
+choices:[
+ ['Sit with Morgan and introduce yourself.','hallway',{friendship:15,trust:6,confidence:3},{befriended:true},'You introduced yourself to Morgan.'],
+ ['Sit elsewhere but give Morgan an encouraging smile.','hallway',{friendship:5,confidence:2},{noticed:true},'You acknowledged Morgan without drawing attention.'],
+ ['Laugh along to fit in with Riley.','hallway',{friendship:-8,stress:8,confidence:-2},{laughed:true},'You joined the laughter.'],
+ ['Tell Riley to leave the sketchbook alone.','hallway',{confidence:10,friendship:8,stress:5},{spokeUp:true},'You spoke up in class.']
+]},
+hallway:{title:'The Hallway',emoji:'🎒',text:s=>`Between classes, Riley deliberately bumps into Morgan. Papers scatter across the floor.
+
+${s.flags.laughed?'Riley catches your eye, expecting you to join in again.':s.flags.befriended?'Morgan looks toward you, recognizing a friendly face.':'Students move past without stopping.'}
+
+A teacher is standing near the stairwell, but can't see what's happened.`,choices:[
+ ['Help collect the papers and check on Morgan.','group',{friendship:13,trust:5,confidence:3},{helped:true},'You helped Morgan pick up their things.'],
+ ['Find the nearby teacher and explain what happened.','group',{trust:16,school:13,stress:-4},{reported:true},'You asked a teacher for support.'],
+ ['Tell Riley to stop, without threatening anyone.','group',{confidence:10,stress:6,friendship:5},{confronted:true},'You set a boundary in the hallway.'],
+ ['Walk away because you are unsure what to do.','group',{stress:8,friendship:-6},{avoided:true},'You walked away from the situation.']
+]},
+group:{title:'Assigned Partners',emoji:'📝',text:s=>`In history class, your group must design an exhibit together. You're assigned to Morgan and Riley.
+
+Riley says Morgan should do all the research while everyone else presents. Morgan whispers, “This always happens.”
+
+Your teacher will review each person's contribution at the end of the week.`,choices:[
+ ['Suggest splitting tasks fairly and recording contributions.','online',{school:11,confidence:6,friendship:7},{fair:true},'You proposed a fair plan.'],
+ ['Ask Morgan privately what would make the group work better.','online',{friendship:14,trust:6},{listened:true},'You listened to Morgan.'],
+ ['Agree with Riley to avoid conflict.','online',{school:-7,friendship:-12,stress:7},{agreed:true},'You went along with an unfair plan.'],
+ ['Ask your teacher to help set group expectations.','online',{school:16,trust:12},{teacherHelp:true},'You requested group-work support.']
+]},
+online:{title:'After School',emoji:'📱',text:s=>`That evening, the class group chat fills with messages. Someone posts an edited picture of Morgan.
+
+Several people react. Morgan leaves the conversation. A new message from an unknown account asks you to share the picture elsewhere.
+
+${s.flags.laughed?'You remember how you acted on the first day. You still get to choose what happens now.':'Your phone buzzes again.'}`,choices:[
+ ['Do not share it. Save evidence and report the harassment.','lunch',{trust:15,school:10,stress:-3},{evidence:true},'You saved evidence and reported the post.'],
+ ['Check in privately with Morgan and offer support.','lunch',{friendship:16,trust:7},{checkedIn:true},'You checked on Morgan privately.'],
+ ['Tell the chat to delete the picture without attacking anyone.','lunch',{confidence:10,friendship:6,stress:4},{chatBoundary:true},'You asked the group to stop sharing the image.'],
+ ['Forward the picture because everyone seems to be doing it.','lunch',{friendship:-22,trust:-10,stress:13},{shared:true},'You forwarded the harmful picture.']
+]},
+lunch:{title:'An Invitation',emoji:'🍎',text:s=>`At lunch, Riley invites you to sit at their crowded table. On the other side of the cafeteria, Morgan is sitting alone.
+
+${s.flags.shared?'Morgan avoids looking at you. Word has spread that you forwarded the picture.':s.flags.checkedIn||s.flags.befriended?'Morgan waves when they see you.':'You can feel everyone making tiny judgments about where people sit.'}
+
+A student named Sam asks if you'd like to help organize an art showcase next week.`,choices:[
+ ['Sit with Morgan and invite Sam too.','meeting',{friendship:15,confidence:5},{satWith:true},'You built a welcoming table.'],
+ ['Join the art showcase and invite classmates from different groups.','meeting',{school:15,friendship:8},{showcase:true},'You volunteered for the showcase.'],
+ ['Sit with Riley and challenge jokes when they turn unkind.','meeting',{confidence:9,stress:6,trust:2},{rileyTable:true},'You joined Riley but set expectations.'],
+ ['Eat quietly and take a needed break.','meeting',{stress:-14,confidence:2},{rested:true},'You gave yourself a break.']
+]},
+meeting:{title:'A Conversation That Matters',emoji:'🚪',text:s=>`The school counselor, Ms. Chen, announces an optional drop-in session on friendships, conflict, and online harassment.
+
+${s.flags.reported||s.flags.evidence?'A teacher has also followed up on your earlier report.':'You still have the chance to speak to someone about what you have seen.'}
+
+Morgan tells you, “I don't know if anything will change.”`,choices:[
+ ['Go together and listen to what Morgan wants.','event',{trust:15,friendship:13,stress:-8},{counselor:true},'You attended the counselor meeting together.'],
+ ['Meet with the counselor yourself and discuss safe next steps.','event',{trust:15,stress:-10,confidence:4},{soloCounselor:true},'You spoke with the counselor.'],
+ ['Invite Sam to help create a welcoming showcase space.','event',{school:15,friendship:6},{community:true},'You organized community support.'],
+ ['Promise Morgan you will handle everything alone.','event',{confidence:4,stress:13,trust:-3},{soloFix:true},'You tried to take responsibility alone.']
+]},
+event:{title:'Showcase Day',emoji:'🎨',text:s=>`The art showcase is tonight. Morgan's drawings are among the displays, but Riley has been making comments about the exhibit all week.
+
+${s.stats.friendship>48?'Morgan trusts you enough to say what kind of support would help.':'You have not spent much time with Morgan lately, so you are unsure how they feel.'}
+
+Riley approaches. “This whole thing is getting blown out of proportion,” they say.`,choices:[
+ ['Ask Morgan what they want, then follow their lead.','resolution',{friendship:14,trust:9,confidence:3},{respect:true},'You respected Morgan’s choices.'],
+ ['Calmly tell Riley the behavior caused harm and needs to stop.','resolution',{confidence:12,stress:4,school:4},{accountability:true},'You named the impact of the behavior.'],
+ ['Get an adult facilitator instead of escalating the conflict.','resolution',{trust:14,school:12,stress:-6},{facilitated:true},'You brought in support.'],
+ ['Pretend nothing happened and focus on the event.','resolution',{stress:8,friendship:-8},{ignored:true},'You avoided the conflict at the showcase.']
+]},
+resolution:{title:'What Happens Next',emoji:'🌅',text:s=>`The showcase ends, but the semester does not. ${s.flags.shared?'You recognize that sharing the picture hurt someone. You can still take responsibility for what you did.': 'People are beginning to notice how small decisions have shaped the atmosphere at school.'}
+
+The next morning, you find a message asking whether you're willing to help make things better.`,choices:[
+ ['Take responsibility for mistakes, apologize without demanding forgiveness, and stop repeating the harm.','ending',{trust:15,friendship:8,confidence:5},{apology:true},'You chose accountability.'],
+ ['Work with school staff and students on safer reporting and peer support.','ending',{school:18,trust:10},{plan:true},'You helped make a practical support plan.'],
+ ['Support Morgan’s next steps while respecting their boundaries.','ending',{friendship:16,stress:-6},{boundaries:true},'You offered continuing support.'],
+ ['Step away for now and focus on recovering your own energy.','ending',{stress:-16,confidence:4},{selfCare:true},'You took time to recover.']
+]}
+};
+const stageOrder=['arrival','hallway','group','online','lunch','meeting','event','resolution','ending'];
+const permittedStats=['confidence','stress','trust','friendship','school'];
+function persist(){if(state)localStorage.setItem(KEY,JSON.stringify(state));}
+function choose(i){if(!state||state.scene==='ending')return;const scene=scenes[state.scene],c=scene.choices[i];if(!c)return;
+ const [label,next,delta,flags,note]=c;for(const [k,v] of Object.entries(delta)){if(permittedStats.includes(k))state.stats[k]=clamp(state.stats[k]+v);}
+ Object.assign(state.flags,flags);state.path.push(i);state.history.push(note);state.scene=next;state.day+=1;persist();render();
+}
+function ending(){const s=state,st=s.stats;const support=st.trust+st.friendship+st.school;
+ let title,body;
+ if(s.flags.shared&&!s.flags.apology){title='A Lesson Still Unfinished';body='You recognize that harm does not disappear on its own. Some trust remains damaged. The future is still open, and taking responsibility is a choice you can make next.';}
+ else if(s.flags.apology&&s.flags.shared){title='Choosing Accountability';body='You stopped repeating the harm, owned what you did, and apologized without expecting immediate forgiveness. Repairing trust takes time, but you have begun.';}
+ else if(support>=190){title='A School That Starts to Change';body='Students and adults begin working together. The changes are gradual: clearer expectations, more support, and people who feel less alone. You helped create the conditions for that progress.';}
+ else if(st.friendship>=70){title='One Trustworthy Friend';body='You could not control everyone else, but you listened, showed up, and respected boundaries. A friendship became a source of support.';}
+ else if(st.trust>=67){title='You Did Not Have to Solve It Alone';body='You asked for help and involved people able to intervene. The situation is not magically resolved, but there is now a support plan and someone to follow up.';}
+ else if(s.flags.selfCare){title='Room to Begin Again';body='You chose to recover before taking on more. Rest can be part of doing better. There are still people and resources you can turn to.';}
+ else{title='Tomorrow Is Another Choice';body='Some moments were difficult, and not every decision helped. The relationships you leave behind are complicated. This is not a final verdict on who you are.';}
+ return {title,body};
+}
+function render(){if(!state){$('intro').classList.remove('hidden');$('game').classList.add('hidden');return;}
+ $('intro').classList.add('hidden');$('game').classList.remove('hidden');
+ const last=state.scene==='ending',e=last?ending():scenes[state.scene];
+ $('chapter').textContent=last?'YOUR ENDING':`CHAPTER ${stageOrder.indexOf(state.scene)+1} OF 8`;
+ $('sceneTitle').textContent=e.title;$('emoji').textContent=last?'🌱':e.emoji;
+ $('narrative').textContent=last?`${e.body}\n\nEvery playthrough is a different combination of actions, relationships, and outcomes. Not every ending is a perfect resolution.`:e.text(state);
+ $('choices').replaceChildren();
+ if(last){const b=document.createElement('button');b.className='primary';b.textContent='Play a different story';b.onclick=reset;$('choices').append(b);}
+ else e.choices.forEach((c,i)=>{const b=document.createElement('button');b.className='choice';const number=document.createElement('b');number.textContent=(i+1)+'.';const span=document.createElement('span');span.textContent=c[0];b.append(number,span);b.onclick=()=>choose(i);$('choices').append(b);});
+ $('endingScore').textContent=last?`Your path: ${state.path.map(n=>n+1).join(' → ')}`:'';
+ const meterNames={confidence:'Confidence',stress:'Stress',trust:'Trusted support',friendship:'Friendships',school:'School climate'};
+ $('meters').replaceChildren();
+ for(const [k,n] of Object.entries(meterNames)){const box=document.createElement('div');box.className='meter';const header=document.createElement('header');header.textContent=`${n} · ${state.stats[k]}/100`;const track=document.createElement('div');track.className='track';const fill=document.createElement('div');fill.className='fill'+(k==='stress'?' stress':'');fill.style.width=state.stats[k]+'%';track.append(fill);box.append(header,track);$('meters').append(box);}
+ $('events').replaceChildren();state.history.slice(-7).forEach(t=>{const li=document.createElement('li');li.textContent=t;$('events').append(li);});
+ $('day').textContent=`Playing as ${state.name} · Day ${state.day}`;window.scrollTo({top:0,behavior:'instant'});
+}
+function reset(){if(state&&!confirm('Start a new story? Your current story will be replaced.'))return;state=null;render();}
+function validSave(v){return !!v&&v.version===1&&typeof v.name==='string'&&typeof v.scene==='string'&&stageOrder.includes(v.scene)&&v.stats&&permittedStats.every(k=>Number.isFinite(v.stats[k])&&v.stats[k]>=0&&v.stats[k]<=100)&&v.flags&&typeof v.flags==='object'&&Array.isArray(v.history)&&Array.isArray(v.path)&&v.path.length<=8&&Number.isInteger(v.day);}
+$('begin').onclick=()=>{state=init($('name').value.trim().slice(0,22));persist();render();};
+$('name').onkeydown=e=>{if(e.key==='Enter')$('begin').click();};
+$('restart').onclick=reset;
+$('save').onclick=()=>{if(!state){alert('Start a story first.');return;}persist();alert('Saved on this device.');};
+$('load').onclick=()=>{try{const v=JSON.parse(localStorage.getItem(KEY));if(!validSave(v))throw Error('invalid');state=v;render();}catch(e){alert('No valid saved story found on this device.');}};
+document.addEventListener('keydown',e=>{if(!state||state.scene==='ending'||e.target instanceof HTMLInputElement)return;const i=Number(e.key)-1;if(i>=0&&i<4)choose(i);});
+render();
+</script></body></html>
